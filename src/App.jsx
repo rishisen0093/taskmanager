@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
-import useNotes from "./hooks/useNotes";
+import { useSelector, useDispatch } from "react-redux";
+import { addNote, updateNote, deleteNote } from "./store/notesSlice";
 import NotesList from "./pages/NotesList";
 import AddNote from "./pages/AddNote";
 import Modal from "./components/Modal";
@@ -8,7 +9,8 @@ import NoteForm from "./components/NoteForm";
 import { useTheme } from "./context/ThemeContext";
 
 export default function App() {
-  const { notes, addNote, updateNote, deleteNote } = useNotes();
+  const notes = useSelector((state) => state.notes);   
+  const dispatch = useDispatch();                      
   const [editingNote, setEditingNote] = useState(null);
   const { dark, toggleTheme } = useTheme();
 
@@ -16,20 +18,19 @@ export default function App() {
 
   const handleUpdate = (data) => {
     if (!editingNote) return;
-    updateNote(editingNote.id, data);
+    dispatch(updateNote({ id: editingNote.id, updated: data }));
     setEditingNote(null);
   };
 
   return (
     <BrowserRouter>
-      <header className={`shadow-md p-4 flex justify-between items-center text-white 
-        ${dark ? "bg-gray-800" : "bg-gradient-to-r from-blue-600 to-indigo-600"}`}>
+      <header
+        className={`shadow-md p-4 flex justify-between items-center text-white 
+        ${dark ? "bg-gray-800" : "bg-gradient-to-r from-blue-600 to-indigo-600"}`}
+      >
         <h1 className="text-2xl font-extrabold tracking-wide">Notes Manager</h1>
         <nav className="space-x-4 flex items-center">
-          <Link
-            to="/"
-            className="hover:underline hover:text-gray-200 transition"
-          >
+          <Link to="/" className="hover:underline hover:text-gray-200 transition">
             All Notes
           </Link>
           <Link
@@ -42,26 +43,37 @@ export default function App() {
           <button
             onClick={toggleTheme}
             className={`ml-4 px-3 py-1.5 rounded shadow font-semibold transition
-              ${dark ? "bg-gray-600 text-white hover:bg-gray-500" : "bg-gray-200 text-gray-800 hover:bg-gray-300"}`}
+              ${
+                dark
+                  ? "bg-gray-600 text-white hover:bg-gray-500"
+                  : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+              }`}
           >
             {dark ? "Light Mode" : "Dark Mode"}
           </button>
         </nav>
       </header>
 
-      <main className={`${dark ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"} p-6 min-h-screen transition-colors`}>
+      <main
+        className={`${
+          dark ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"
+        } p-6 min-h-screen transition-colors`}
+      >
         <Routes>
           <Route
             path="/"
             element={
               <NotesList
                 notes={notes}
-                onDelete={deleteNote}
+                onDelete={(id) => dispatch(deleteNote(id))}
                 onEdit={handleEditClick}
               />
             }
           />
-          <Route path="/add" element={<AddNote addNote={addNote} />} />
+          <Route
+            path="/add"
+            element={<AddNote addNote={(note) => dispatch(addNote(note))} />}
+          />
         </Routes>
       </main>
 
