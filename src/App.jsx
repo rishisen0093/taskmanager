@@ -10,7 +10,7 @@ import { useTheme } from "./context/ThemeContext";
 export default function App() {
   const { notes, addNote, updateNote, deleteNote } = useNotes();
   const [editingNote, setEditingNote] = useState(null);
-  const { dark, toggleTheme } = useTheme(); // Theme hook
+  const { dark, toggleTheme } = useTheme();
 
   const handleEditClick = (note) => setEditingNote(note);
 
@@ -39,7 +39,6 @@ export default function App() {
             Add Note
           </Link>
 
-          {/* Theme Toggle Button */}
           <button
             onClick={toggleTheme}
             className={`ml-4 px-3 py-1.5 rounded shadow font-semibold transition

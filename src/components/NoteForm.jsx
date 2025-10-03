@@ -33,14 +33,13 @@ export default function NoteForm({ initial = { title: "", description: "" }, onS
     e.preventDefault();
     if (!validate()) return;
     onSubmit({ title: title.trim(), description: description.trim() });
-    // Clear form after submit
     setTitle("");
     setDescription("");
     setErrors({ title: "", description: "" });
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-xl p-6 shadow-lg space-y-4">
+    <form onSubmit={handleSubmit} className="bg-white rounded-xl p-6  space-y-4">
       <div>
         <label className="block text-gray-700 font-medium mb-1">Title</label>
         <input

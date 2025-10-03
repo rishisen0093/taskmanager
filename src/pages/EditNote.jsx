@@ -1,4 +1,3 @@
-// src/pages/EditNote.jsx
 import { useNavigate, useParams } from "react-router-dom";
 import NoteForm from "../components/NoteForm";
 

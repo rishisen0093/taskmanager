@@ -4,7 +4,6 @@ import NoteCard from "../components/NoteCard";
 export default function NotesList({ notes, onDelete, onEdit }) {
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Filter notes based on search query
   const filteredNotes = notes.filter((note) =>
     note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     note.description.toLowerCase().includes(searchQuery.toLowerCase())
@@ -12,7 +11,6 @@ export default function NotesList({ notes, onDelete, onEdit }) {
 
   return (
     <div>
-      {/* Search input */}
       <div className="mb-6 flex justify-center">
         <input
           type="text"
@@ -23,7 +21,6 @@ export default function NotesList({ notes, onDelete, onEdit }) {
         />
       </div>
 
-      {/* Notes List */}
       {filteredNotes.length === 0 ? (
         <p className="text-center text-gray-500 mt-10">No notes found.</p>
       ) : (
