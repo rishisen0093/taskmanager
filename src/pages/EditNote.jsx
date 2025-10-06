@@ -1,15 +1,21 @@
 import { useNavigate, useParams } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import NoteForm from "../components/NoteForm";
+import { updateNoteAsync } from "../store/notesSlice";
 
-export default function EditNote({ getNote, updateNote }) {
+export default function EditNote() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const note = getNote(id);
-  if (!note) return <p>Note not found!</p>;
+  const note = useSelector((state) =>
+    state.notes.find((n) => n.id === id)
+  );
+
+  if (!note) return <p className="text-center mt-10 text-gray-500">Note not found!</p>;
 
   const handleSubmit = (data) => {
-    updateNote(id, data);
+    dispatch(updateNoteAsync({ id: note.id, updated: data }));
     navigate("/");
   };
 

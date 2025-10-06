@@ -1,13 +1,24 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchNotes, deleteNoteAsync } from "../store/notesSlice";
 import NoteCard from "../components/NoteCard";
 
-export default function NotesList({ notes, onDelete, onEdit }) {
+export default function NotesList({ onEdit }) {
   const [searchQuery, setSearchQuery] = useState("");
+  const notes = useSelector((state) => state.notes);
+  const dispatch = useDispatch();
 
-  const filteredNotes = notes.filter((note) =>
-    note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    note.description.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      dispatch(fetchNotes(searchQuery));
+    }, 300); 
+
+    return () => clearTimeout(delayDebounce);
+  }, [searchQuery, dispatch]);
+
+  const handleDelete = (id) => {
+    dispatch(deleteNoteAsync(id));
+  };
 
   return (
     <div>
@@ -21,15 +32,15 @@ export default function NotesList({ notes, onDelete, onEdit }) {
         />
       </div>
 
-      {filteredNotes.length === 0 ? (
+      {notes.length === 0 ? (
         <p className="text-center text-gray-500 mt-10">No notes found.</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredNotes.map((note) => (
+          {notes.map((note) => (
             <NoteCard
               key={note.id}
               note={note}
-              onDelete={onDelete}
+              onDelete={() => handleDelete(note.id)}
               onEdit={onEdit}
             />
           ))}

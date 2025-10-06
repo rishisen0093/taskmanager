@@ -1,13 +1,20 @@
 import React from "react";
 import NoteForm from "../components/NoteForm";
 import { useNavigate } from "react-router-dom";
-
-export default function AddNote({ addNote }) {
+import { useDispatch } from "react-redux";
+import { addNoteAsync } from "../store/notesSlice";
+export default function AddNote() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const handleAdd = (data) => {
-    addNote(data);
-    navigate("/");
+  const handleAdd = async (data) => {
+    try {
+      await dispatch(addNoteAsync(data)).unwrap();
+      navigate("/"); 
+    } catch (err) {
+      console.error("Failed to add note:", err);
+      alert("Failed to add note. Please try again.");
+    }
   };
 
   return (
