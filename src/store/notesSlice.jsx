@@ -52,14 +52,19 @@ const notesSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchNotes.fulfilled, (state, action) => action.payload)
-      .addCase(addNoteAsync.fulfilled, (state, action) => state.unshift(action.payload))
+      .addCase(addNoteAsync.fulfilled, (state, action) => {
+        state.unshift(action.payload); // ✅ fixed mutation only
+      })
       .addCase(updateNoteAsync.fulfilled, (state, action) => {
         const { id, updated } = action.payload;
-        return state.map((note) => (note.id === id ? { ...note, ...updated } : note));
+        const index = state.findIndex((note) => note.id === id);
+        if (index !== -1) {
+          state[index] = { ...state[index], ...updated };
+        }
       })
-      .addCase(deleteNoteAsync.fulfilled, (state, action) =>
-        state.filter((note) => note.id !== action.payload)
-      );
+      .addCase(deleteNoteAsync.fulfilled, (state, action) => {
+        return state.filter((note) => note.id !== action.payload);
+      });
   },
 });
 
