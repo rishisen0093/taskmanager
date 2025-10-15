@@ -10,18 +10,18 @@ const notesRouter = require("./routes/notes");
 const { errorHandler } = require("./middlewares/errorHandler");
 
 const numCPUs = os.cpus().length;
-const PORT = process.env.PORT || 4000;
+const PORT = 4000;
 
 if (cluster.isPrimary) {
-  console.log(`🧠 Primary process PID: ${process.pid}`);
-  console.log(`⚙️  Starting ${numCPUs} worker processes...\n`);
+  console.log(`Primary process PID: ${process.pid}`);
+  console.log(`Starting ${numCPUs} worker processes...`);
 
   for (let i = 0; i < numCPUs; i++) {
     cluster.fork();
   }
 
   cluster.on("exit", (worker, code, signal) => {
-    console.log(`❌ Worker ${worker.process.pid} died. Restarting...`);
+    console.log(`Worker ${worker.process.pid} died. Restarting...`);
     cluster.fork();
   });
 } else {
@@ -36,23 +36,23 @@ if (cluster.isPrimary) {
   app.use("/api/notes", notesRouter);
 
   app.get("/api/heavy", (req, res) => {
-    console.log(`🧵 Heavy computation started by worker ${process.pid}`);
+    console.log(`Heavy computation started by worker ${process.pid}`);
 
-    const worker = new Worker("./worker.js");
+    const worker = new Worker("./worker/worker.js");
 
     worker.on("message", (result) => {
-      console.log(`✅ Worker ${process.pid} finished with result: ${result}`);
+      console.log(`Worker ${process.pid} finished with result: ${result}`);
       res.json({ message: "Computation complete", result });
     });
 
     worker.on("error", (err) => {
-      console.error(`❌ Worker ${process.pid} error:`, err);
+      console.error(`Worker ${process.pid} error:`, err);
       res.status(500).json({ error: "Worker thread failed", details: err.message });
     });
 
     worker.on("exit", (code) => {
       if (code !== 0)
-        console.error(`⚠️ Worker stopped with exit code ${code}`);
+        console.error(`Worker stopped with exit code ${code}`);
     });
   });
 
@@ -63,6 +63,6 @@ if (cluster.isPrimary) {
   app.use(errorHandler);
 
   app.listen(PORT, () => {
-    console.log(`🚀 Worker ${process.pid} listening on http://localhost:${PORT}`);
+    console.log(`Worker ${process.pid} listening on http://localhost:${PORT}`);
   });
 }
